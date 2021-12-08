@@ -79,7 +79,6 @@ class League(leagueId: Int, year: Int, swid: String, espnS2: String) : BaseLeagu
         val data = super.fetchLeague()
         this.nflWeek = data!!["status"]!!.jsonObject["latestScoringPeriod"]!!
         this.fetchTeams(data)
-
     }
 
     fun loadRosterWeek(week: Int) {
@@ -204,6 +203,7 @@ class League(leagueId: Int, year: Int, swid: String, espnS2: String) : BaseLeagu
         }
         return null
     }
+
     fun recentActivity(size: Int = 25, msgType: String = ""): MutableList<Any> {
         var msgTypes: List<Any> = listOf(178, 180, 179, 239, 181, 244)
 
@@ -219,21 +219,13 @@ class League(leagueId: Int, year: Int, swid: String, espnS2: String) : BaseLeagu
                     "value" to listOf(
                         "ACTIVITY_TRANSACTIONS"
                     )
-                ),
-                "limit" to size,
-                "limitPerMessageSet" to mapOf(
+                ), "limit" to size, "limitPerMessageSet" to mapOf(
                     "value" to 25
-                ),
-                "offset" to 0,
-                "sortMessageDate" to mapOf(
-                    "sortPriority" to 1,
-                    "sortAsc" to false
-                ),
-                "sortFor" to mapOf(
-                    "sortPriority" to 2,
-                    "sortAsc" to false
-                ),
-                "filterIncludeMessageTypeIds" to mapOf(
+                ), "offset" to 0, "sortMessageDate" to mapOf(
+                    "sortPriority" to 1, "sortAsc" to false
+                ), "sortFor" to mapOf(
+                    "sortPriority" to 2, "sortAsc" to false
+                ), "filterIncludeMessageTypeIds" to mapOf(
                     "value" to msgTypes
                 )
             )
@@ -248,9 +240,7 @@ class League(leagueId: Int, year: Int, swid: String, espnS2: String) : BaseLeagu
 
 
         val data = this.espnRequest.leagueGet(
-            extend = "/communication/",
-            views = views,
-            headers = headers
+            extend = "/communication/", views = views, headers = headers
         ).jsonObject["topics"]!!.jsonArray
         for (topic in data) {
             activity.add(Activity(topic, this::getTeamData, this::playerInfo))
@@ -455,10 +445,8 @@ class League(leagueId: Int, year: Int, swid: String, espnS2: String) : BaseLeagu
             "players" to mapOf(
                 "filterIds" to mapOf(
                     "value" to listOf(tempPlayerId),
-                ),
-                "filterStatsForTopScoringPeriodIds" to mapOf(
-                    "value" to 16,
-                    "additionalValue" to listOf("00${this.year}", "10${this.year}")
+                ), "filterStatsForTopScoringPeriodIds" to mapOf(
+                    "value" to 16, "additionalValue" to listOf("00${this.year}", "10${this.year}")
                 )
 
             )

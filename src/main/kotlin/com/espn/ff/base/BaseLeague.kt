@@ -15,7 +15,7 @@ open class BaseLeague(leagueId: Int, year: Int, swid: String, espnS2: String) {
 
     lateinit var settings: BaseSettings
     var currentWeek by Delegates.notNull<Int>()
-    var firstScoringPeriod by Delegates.notNull<Int>()
+    private var firstScoringPeriod by Delegates.notNull<Int>()
     var scoringPeriodId by Delegates.notNull<Int>()
     var currentMatchupPeriod by Delegates.notNull<Int>()
     private val logger: KLogger = KotlinLogging.logger {}
@@ -30,12 +30,11 @@ open class BaseLeague(leagueId: Int, year: Int, swid: String, espnS2: String) {
     init {
         this.leagueId = leagueId
         this.year = year
-        this.teams = mutableListOf()
+        this.teams = emptyList<Team>().toMutableList()
         this.draft = emptyList()
         this.playerMap = mutableMapOf()
         this.espnRequest = EspnRequests(year, leagueId, swid, espnS2, logger)
     }
-
 
     open fun fetchLeague(): JsonObject? {
         val data = espnRequest.getLeague()
@@ -62,6 +61,7 @@ open class BaseLeague(leagueId: Int, year: Int, swid: String, espnS2: String) {
     }
 
     open fun fetchTeams(data: JsonObject) {
+        teams.clear()
         val teamData = data["teams"]
         val members = data["members"]
         val schedule = data["schedule"]
@@ -81,8 +81,6 @@ open class BaseLeague(leagueId: Int, year: Int, swid: String, espnS2: String) {
                     newMember = member
                     break
                 }
-
-
             }
 
 
@@ -108,12 +106,10 @@ open class BaseLeague(leagueId: Int, year: Int, swid: String, espnS2: String) {
         val data = this.espnRequest.getProPlayers()
 
         for (player in data.jsonArray) {
-            this.playerMap[player.jsonObject["id"].toString()] =
-                player.jsonObject["fullName"].toString()
+            this.playerMap[player.jsonObject["id"].toString()] = player.jsonObject["fullName"].toString()
 
             if (player.jsonObject["fullName"].toString() !in this.playerMap) {
-                this.playerMap[player.jsonObject["fullName"].toString()] =
-                    player.jsonObject["id"].toString()
+                this.playerMap[player.jsonObject["fullName"].toString()] = player.jsonObject["id"].toString()
             }
         }
     }
